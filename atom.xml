@@ -4,7 +4,7 @@
   <title><![CDATA[My Octopress Blog]]></title>
   <link href="http://RaoZiJian.github.io/atom.xml" rel="self"/>
   <link href="http://RaoZiJian.github.io/"/>
-  <updated>2014-08-27T15:27:33+08:00</updated>
+  <updated>2014-08-27T15:43:45+08:00</updated>
   <id>http://RaoZiJian.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -12,5 +12,14 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[First Article]]></title>
+    <link href="http://RaoZiJian.github.io/blog/2014/08/27/first-article/"/>
+    <updated>2014-08-27T15:42:49+08:00</updated>
+    <id>http://RaoZiJian.github.io/blog/2014/08/27/first-article</id>
+    <content type="html"><![CDATA[<p><strong><em>Test first artilce</em></strong></p>
+]]></content>
+  </entry>
   
 </feed>
