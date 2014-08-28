@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Ken_Rao's blog]]></title>
-  <link href="http://RaoZiJian.github.io/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Cocos2d-x | Ken_Rao's blog]]></title>
+  <link href="http://RaoZiJian.github.io/blog/categories/cocos2d-x/atom.xml" rel="self"/>
   <link href="http://RaoZiJian.github.io/"/>
   <updated>2014-08-28T11:29:47+08:00</updated>
   <id>http://RaoZiJian.github.io/</id>
