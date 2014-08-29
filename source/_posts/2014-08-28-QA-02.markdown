@@ -10,7 +10,7 @@ tags: [Cocos2d-x,Android,JavaActivity]
 ---
 ###Question: 对于JavaActivity如何在安卓上给应用程序设置透明背景？
 
-####之前发过一篇[如何在安卓上给应用程序设置透明背景 NativeActivity篇](http://localhost:4000/blog/2014/08/28/QA-01/)，但是由于3.0rc0后Cocos2d-x更改为Java Activity，而不再是Native Activity，使得这种方法失效。
+####之前发过一篇[如何在安卓上给应用程序设置透明背景 NativeActivity篇](http://raozijian.github.io/blog/2014/08/28/QA-01/)，但是由于3.0rc0后Cocos2d-x更改为Java Activity，而不再是Native Activity，使得这种方法失效。
 
 ![](http://cocos2d-xqa.qiniudn.com/8.png)
 
