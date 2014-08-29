@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Android | Ken_Rao's blog]]></title>
   <link href="http://RaoZiJian.github.io/tags/android/atom.xml" rel="self"/>
   <link href="http://RaoZiJian.github.io/"/>
-  <updated>2014-08-29T10:54:21+08:00</updated>
+  <updated>2014-08-29T14:07:45+08:00</updated>
   <id>http://RaoZiJian.github.io/</id>
   <author>
     <name><![CDATA[RaoZiJian]]></name>
@@ -20,7 +20,7 @@
     <id>http://RaoZiJian.github.io/blog/2014/08/28/QA-02</id>
     <content type="html"><![CDATA[<h3>Question: 对于JavaActivity如何在安卓上给应用程序设置透明背景？</h3>
 
-<h4>之前发过一篇<a href="http://localhost:4000/blog/2014/08/28/QA-01/">如何在安卓上给应用程序设置透明背景 NativeActivity篇</a>，但是由于3.0rc0后Cocos2d-x更改为Java Activity，而不再是Native Activity，使得这种方法失效。</h4>
+<h4>之前发过一篇<a href="http://raozijian.github.io/blog/2014/08/28/QA-01/">如何在安卓上给应用程序设置透明背景 NativeActivity篇</a>，但是由于3.0rc0后Cocos2d-x更改为Java Activity，而不再是Native Activity，使得这种方法失效。</h4>
 
 <p><img src="http://cocos2d-xqa.qiniudn.com/8.png" alt="" /></p>
 
