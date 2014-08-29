@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Tag: Cocos2d-x | Ken_Rao's blog]]></title>
+  <link href="http://RaoZiJian.github.io/tags/cocos2d-x/atom.xml" rel="self"/>
+  <link href="http://RaoZiJian.github.io/"/>
+  <updated>2014-08-29T10:42:43+08:00</updated>
+  <id>http://RaoZiJian.github.io/</id>
+  <author>
+    <name><![CDATA[RaoZiJian]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[QA_List_1]]></title>
+    <link href="http://RaoZiJian.github.io/blog/2014/08/29/qa-03/"/>
+    <updated>2014-08-29T10:32:20+08:00</updated>
+    <id>http://RaoZiJian.github.io/blog/2014/08/29/qa-03</id>
+    <content type="html"><![CDATA[<h4>Question 1: Cocos2dx编译错误Symbol(s) not found for architecture armv7</h4>
+
+<pre><code>使用版本：3.0，3.1，3.2
+运行环境：Mac OS 10.9.3    
+开发环境：Xcode 5.1
+出现问题：Other Linker Flags中增加-ObjC选项会出现如下编译错误。
+
+(null): "_GCControllerDidDisconnectNotification", referenced from:
+
+(null): -[GCControllerConnectionEventHandler observerConnection:disconnection:] in libcocos2dx iOS.a(CCController-iOS.o)
+
+(null): "_GCControllerDidConnectNotification", referenced from:
+
+(null): -[GCControllerConnectionEventHandler observerConnection:disconnection:] in libcocos2dx iOS.a(CCController-iOS.o)
+
+(null): "_OBJC_CLASS_$_GCController", referenced from:
+
+(null): Objc-class-ref in libcocos2dx iOS.a(CCController-iOS.o)
+
+(null): (maybe you meant: _OBJC_CLASS_$_GCControllerConnectionEventHandler)
+
+(null): Symbol(s) not found for architecture armv7
+
+(null): Linker command failed with exit code 1 (use -v to see invocation)
+</code></pre>
+
+<h4>Answer 1: 出现Symbol(s) not found for architecture armv7的错误警告，表示某些类没有被编译到动态库中；可能是对应文件不存在或没找到，或者是没有被加入到XCode工程中，先检查一下你的CCController-iOS.mm文件有没有问题。</h4>
+
+<p><a href="http://www.cocoachina.com/bbs/read.php?tid=225796&amp;page=1#1039042">全文参考链接</a></p>
+
+<hr />
+
+<h4>Question 2: 序列帧动画占用的内存太大，如何使用schedule相似功能？</h4>
+
+<h4>Answer 2: 序列帧动画的确是把所需要的纹理都加载到内存，然后开始播放的，这是用空间换时间的的方案。如果你觉得占用内存过大，那么使用schedule也是可以使实现相似的效果，但是你需要自己实现一套纹理管理机制，在调用所需要的纹理前加载它到内存，同时释放不需要的纹理。</h4>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[如何在安卓上给应用程序设置透明背景 JavaActivity篇]]></title>
+    <link href="http://RaoZiJian.github.io/blog/2014/08/28/QA-02/"/>
+    <updated>2014-08-28T00:00:00+08:00</updated>
+    <id>http://RaoZiJian.github.io/blog/2014/08/28/QA-02</id>
+    <content type="html"><![CDATA[<h3>Question: 对于JavaActivity如何在安卓上给应用程序设置透明背景？</h3>
+
+<h4>之前发过一篇<a href="http://localhost:4000/blog/2014/08/28/QA-01/">如何在安卓上给应用程序设置透明背景 NativeActivity篇</a>，但是由于3.0rc0后Cocos2d-x更改为Java Activity，而不再是Native Activity，使得这种方法失效。</h4>
+
+<p><img src="http://cocos2d-xqa.qiniudn.com/8.png" alt="" /></p>
+
+<!-- more -->
+
+
+<h4>修改的东西不多。主要有3步。</h4>
+
+<ul>
+<li>第一步：在AndroidManifest.xml中设置Activity背景透明</li>
+</ul>
+
+
+<pre><code class="xml">
+android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+</code></pre>
+
+<p><img src="http://cocos2d-xqa.qiniudn.com/9.png" alt="" /></p>
+
+<ul>
+<li><p>第二步：在libcocos2dx项目的org.cocos2dx.lib项目中的Cocos2dxActivity.java文件中，修改init()方法。</p>
+
+<p>  增加如下代码：</p>
+
+<pre><code class="`` cpp">
+  this.mGLSurfaceView.setZOrderOnTop(true);
+  this.mGLSurfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+  this.mGLSurfaceView.setEGLConfigChooser(8,8,8,8,16,0);
+</code></pre>
+
+<p>  删除如下代码:（如果不删除的话，顶部会有一个Cocos2dxEditText的白条，Cocos2dxEditText封装了EditText，主要用于TextField，如果程序中有使用到它，那建议更换为EditBox）</p>
+
+<pre><code class="`` cpp">
+  /mFrameLayout.addView(edittext);
+  //this.mGLSurfaceView.setCocos2dxEditText(edittext);
+</code></pre>
+
+<p>  <img src="http://cocos2d-xqa.qiniudn.com/10.png" alt="" /></p></li>
+<li><p>第三步：在libcocos2dx项目的org.cocos2dx.lib项目中的Cocos2dxRenderer.java文件中，修改onSurfaceCreated()方法。</p>
+
+<p>  增加如下代码：</p>
+
+<pre><code class="`` cpp">
+  pGL10.glDisable(GL10.GL_DITHER);
+  pGL10.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
+  pGL10.glClearColor(0, 0, 0, 0);
+  pGL10.glEnable(GL10.GL_CULL_FACE);
+  pGL10.glShadeModel(GL10.GL_SMOOTH);
+</code></pre>
+
+<p>  <img src="http://cocos2d-xqa.qiniudn.com/11.png" alt="" /></p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[如何在安卓上给应用程序设置透明背景 NativeActivity篇]]></title>
+    <link href="http://RaoZiJian.github.io/blog/2014/08/28/QA-01/"/>
+    <updated>2014-08-28T00:00:00+08:00</updated>
+    <id>http://RaoZiJian.github.io/blog/2014/08/28/QA-01</id>
+    <content type="html"><![CDATA[<h3>Question: 对于NativeActivity如何在安卓上给应用程序设置透明背景？</h3>
+
+<h4>以Cocos2d-x 3.0 rc0为例，对于NativeActivity,效果图：</h4>
+
+<p><img src="http://cocos2d-xqa.qiniudn.com/1.png" alt="" /></p>
+
+<!-- more -->
+
+
+<h4>如果你想让你的activity透明，很简单，只需要4步。</h4>
+
+<ul>
+<li>第一步：打开AndroidManifest.xml文件，添加Translucent到</li>
+</ul>
+
+
+<pre><code>android:theme="@android:style/Theme.NoTitleBar.Fullscreen"&gt;
+</code></pre>
+
+<p><img src="http://cocos2d-xqa.qiniudn.com/2.png" alt="" /></p>
+
+<ul>
+<li>第二步：打开Cocos2dxActivity.java文件，添加</li>
+</ul>
+
+
+<pre><code>getWindow().setFormat(PixelFormat.TRANSLUCENT);
+</code></pre>
+
+<p><img src="http://cocos2d-xqa.qiniudn.com/3.png" alt="" /></p>
+
+<ul>
+<li>第三步：打开cocos2d/cocos/2d/CCDirector.cpp文件，找到setGLDefaultValues()函数，修改最后一个alpha值，范围从0.0f到1.0f。</li>
+</ul>
+
+
+<pre><code>glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+</code></pre>
+
+<p><img src="http://cocos2d-xqa.qiniudn.com/4.png" alt="" />
+<img src="http://cocos2d-xqa.qiniudn.com/5.png" alt="" /></p>
+
+<ul>
+<li>第四步：打开cocos2d/cocos/2d/platform/android/nativeactivity.cpp，找到engine_init_display(struct engine* engine)函数，修改如下数组</li>
+</ul>
+
+
+<p><img src="http://cocos2d-xqa.qiniudn.com/6.png" alt="" /></p>
+
+<p>修改</p>
+
+<pre><code>const EGLint attribs[] = {
+            EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+            EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+            EGL_BLUE_SIZE, 5,
+            EGL_GREEN_SIZE, 6,
+            EGL_RED_SIZE, 5,
+            EGL_DEPTH_SIZE, 16,
+            EGL_STENCIL_SIZE, 8,
+            EGL_NONE
+    };
+</code></pre>
+
+<p>成</p>
+
+<pre><code>const EGLint attribs[] = {
+                EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+                EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,  
+ //EGL_BLUE_SIZE, 5,   --&gt;delete 
+ //EGL_GREEN_SIZE, 6,  --&gt;delete 
+ //EGL_RED_SIZE, 5,    --&gt;delete 
+                EGL_BUFFER_SIZE, 32,  //--&gt;new field
+                EGL_DEPTH_SIZE, 16,
+                EGL_STENCIL_SIZE, 8,
+                EGL_NONE
+        };
+</code></pre>
+
+<p><img src="http://cocos2d-xqa.qiniudn.com/7.png" alt="" /></p>
+
+<p>搞定收工</p>
+]]></content>
+  </entry>
+  
+</feed>
