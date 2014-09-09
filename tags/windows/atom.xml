@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: windows | Ken_Rao's blog]]></title>
   <link href="http://RaoZiJian.github.io/tags/windows/atom.xml" rel="self"/>
   <link href="http://RaoZiJian.github.io/"/>
-  <updated>2014-08-29T14:07:45+08:00</updated>
+  <updated>2014-09-09T17:50:26+08:00</updated>
   <id>http://RaoZiJian.github.io/</id>
   <author>
     <name><![CDATA[RaoZiJian]]></name>
@@ -225,7 +225,7 @@ void resumeEventListenersForTarget(Node* target, bool recursive = false);
 
 <h4>Question 17: SimpleAudioEngine在Windows平台上卡顿严重，无法调节音量？</h4>
 
-<h4>Answer 18: SimpleAudioEngine是分平台实现的，Windows平台上部分API是空实现（比如preloadBackgroundMusic等等）,所以在Windows平台上并不提供预加载，调节音量等功能（参见cocos/audio/win32/SimpleAudioEngine.cpp），移植到Android/iOS/Mac上就正常了。Windows上调节音量有网友提供了解决方案。</h4>
+<h4>Answer 17: SimpleAudioEngine是分平台实现的，Windows平台上部分API是空实现（比如preloadBackgroundMusic等等）,所以在Windows平台上并不提供预加载，调节音量等功能（参见cocos/audio/win32/SimpleAudioEngine.cpp），移植到Android/iOS/Mac上就正常了。Windows上调节音量有网友提供了解决方案。</h4>
 
 <p><a href="http://www.cocoachina.com/bbs/read.php?tid=213345">参考链接</a></p>
 ]]></content>
