@@ -1,7 +1,7 @@
 ---
 
 layout: post
-title: "Cocos2d-x 网络篇"
+title: "Cocos2d-x 网络Http篇"
 date: 2014-09-10 10:22:52 +0800
 comments: true
 categories: blog Cocos2dx
