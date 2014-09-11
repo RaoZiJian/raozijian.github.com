@@ -1,0 +1,234 @@
+---
+
+layout: post
+title: "Cocos2d-x 网络篇"
+date: 2014-09-10 10:22:52 +0800
+comments: true
+categories: blog Cocos2dx
+tag: 网络 Http Cocos2d-x v3.0
+
+---
+
+#Cocos2d-x 网络Http篇
+
+谈到Cocos2d-x中的Http网络编程，它的基本流程是:
+
+1. 创建HttpRequest
+2. 创建setResponseCallback()回调函数来设置如何对请求回复后的信息进行操作
+3. 通过HttpClient发送HttpRequest请求
+
+因此，你首先要知道3个类:
+
+* HttpRequest
+* HttpResponse
+* HttpClient
+
+了解了它们之后再来看引擎`cpp-test`中的`cpp-test/Classes/ExtensionsTest/NetworkTest/HttpClientTest`，就能对Cocos2d-x中Http的用法基本了解了。
+
+<!-- more -->
+
+##HttpRequest
+
+顾名思义，它将处理向Http的发出请求，即将用户的请求内容信息给封装到HttpRequest对象当中。目前的话，支持以下几种类型的HttpRequest
+
+	/** Use this enum type as param in setReqeustType(param) */
+	enum class Type
+	{
+		GET,
+        POST,
+        PUT,
+        DELETE,
+        UNKNOWN,
+    };
+    
+其中UNKNOWN类型是它的初始化默认类型，这个在它的构造函数中可以看到，需要注意的是，由于线程不安全的问题，不要将`HttpRequest`放到自动回收池当中去，这可能会导致崩溃。
+
+    /** Constructor
+        Because HttpRequest object will be used between UI thead and network thread,
+        requestObj->autorelease() is forbidden to avoid crashes in AutoreleasePool
+        new/retain/release still works, which means you need to release it manually
+        Please refer to HttpRequestTest.cpp to find its usage
+     */
+    HttpRequest()
+    {
+        _requestType = Type::UNKNOWN;
+        _url.clear();
+        _requestData.clear();
+        _tag.clear();
+        _pTarget = nullptr;
+        _pSelector = nullptr;
+        _pCallback = nullptr;
+        _pUserData = nullptr;
+    };
+
+通过这个构造函数，我们也可以看到HttpRequest的一些属性，这些protected的属性在HttpRequest中的定义如下，可以通过注释来简单的了解下它们的作用。
+
+	protected:
+   	 // properties
+    	Type                        _requestType;    /// kHttpRequestGet, kHttpRequestPost or other enums
+    	std::string                 _url;            /// target url that this request is sent to
+    	std::vector<char>           _requestData;    /// used for POST
+    	std::string                 _tag;            /// user defined tag, to identify different requests in response callback
+    	Ref*                        _pTarget;        /// callback target of pSelector function
+    	SEL_HttpResponse            _pSelector;      /// callback function, e.g. MyLayer::onHttpResponse(HttpClient *sender, HttpResponse * response)
+    	ccHttpRequestCallback       _pCallback;      /// C++11 style callbacks
+    	void*                       _pUserData;      /// You can add your customed data here 
+    	std::vector<std::string>    _headers;		      /// custom http headers
+    
+这些属性中，`_requestType`，`_url`，`_requestData`，`_tag`，`_pTarget`，`_headers`都有get/set方法可以找到，这些也是比较常用到的属性。
+
+`_pSelector`指的是发送请求后的回调函数，`_pTarget`是它的回调函数的作用对象，如下所示：
+
+    CC_DEPRECATED_ATTRIBUTE inline void setResponseCallback(Ref* pTarget, SEL_HttpResponse pSelector)
+    {
+        _pTarget = pTarget;
+        _pSelector = pSelector;
+        
+        if (_pTarget)
+        {
+            _pTarget->retain();
+        }
+    }
+
+可以看到，目前旧的`setResponseCallback`已经被废弃了，这是现在由于我们有了新的支持C++11类型的回调函数，现在这个回调函数将指向`_pCallback`，它是一个`ccHttpRequestCallback`类，它的定义如下：
+
+	typedef std::function<void(HttpClient* client, HttpResponse* response)> ccHttpRequestCallback;
+	
+`_pCallback`在HttpRequest类中担任发送请求后接受的回调函数的责任，它仍然叫做`setResponseCallback`但是已经是C++11类型的回调函数了:
+
+    inline void setResponseCallback(const ccHttpRequestCallback& callback)
+    {
+        _pCallback = callback;
+    }
+    
+OK!`HttpRequest`的类的属性和接口的用法和含义大致上就是这样。
+
+##HttpResponse
+
+与HttpRequest相反，HttpResponse存储Http服务器返回的请求，因此它并不需要由用户创建，它将由HttpClient创建并返回，用户只需要知道如何去处理它返回的信息即可。
+
+它的一些基本属性:
+
+	protected:
+    	bool initWithRequest(HttpRequest* request);
+    
+    	// properties
+    	HttpRequest*        _pHttpRequest;  /// the corresponding HttpRequest pointer who leads to this response 
+    	bool                _succeed;       /// to indecate if the http reqeust is successful simply
+    	std::vector<char>   _responseData;  /// the returned raw data. You can also dump it as a string
+    	std::vector<char>   _responseHeader;  /// the returned raw header data. You can also dump it as a string
+    	long                _responseCode;    /// the status code returned from libcurl, e.g. 200, 404
+    	std::string         _errorBuffer;   /// if _responseCode != 200, please read _errorBuffer to find the reason 
+    
+
+其中`initWithRequest`只在内部调用的时候需要用到，用户不需要关心。`_pHttpRequest`可以通过`getHttpRequest()`来获得它对用的HttpRequest请求对象，`_succeed`可以通过`isSucceed`接口来判定是否请求成功。其余的属性均有get/set方法来获得进行操作。
+
+##HttpClient
+HttpClient是一个单例，它控制着HttpRequest和HttpResponse的收发传递。它有一些公共接口，其中最重要的可能就是对请求的发送了，当然在这之前你得先获得这个单例对象：
+
+    /** Return the shared instance **/
+    static HttpClient *getInstance();
+    
+    /** Relase the shared instance **/
+    static void destroyInstance();
+    /**
+     * Add a get request to task queue
+     * @param request a HttpRequest object, which includes url, response callback etc.
+                      please make sure request->_requestData is clear before calling "send" here.
+     */
+    void send(HttpRequest* request);
+
+    /**
+     * Immediate send a request
+     * @param request a HttpRequest object, which includes url, response callback etc.
+                      please make sure request->_requestData is clear before calling "sendImmediate" here.
+     */
+    void sendImmediate(HttpRequest* request);
+    
+在这里，`send`和`sendImmediate`的区别在于，前者会将HttpRequest排到到request的队列线程的最后，后者则会立刻新建一个线程后发送。除此之外，它还有一些接口对应其它的用途。如`get/setTimeoutForConnect`可以get/set连接的超时时间，`get/setTimeoutForRead`可以get/set下载的超时时间。
+
+##HttpClientTest
+
+在了解了相关的3个类之后，我相信现在大部分内容你应该已经了解了，现在来看一下cpp-test中的http流程是怎么写的，你就基本上大致了解它的使用过程了。更多的内容，可以在`cpp-test/Classes/ExtensionsTest/NetworkTest/HttpClientTest`看到
+
+	void HttpClientTest::onMenuDeleteTestClicked(Ref *sender, bool isImmediate)    // test 1
+    	{
+       		HttpRequest* request = new (std::nothrow) HttpRequest();
+        	request->setUrl("http://just-make-this-request-failed.com");
+        	request->setRequestType(HttpRequest::Type::GET);
+        	request->setResponseCallback(CC_CALLBACK_2(HttpClientTest::onHttpRequestCompleted, this));
+        	if (isImmediate)
+        	{
+            	request->setTag("GET immediate test1");
+            	HttpClient::getInstance()->sendImmediate(request);
+        	}else
+        	{
+            	request->setTag("GET test1");
+            	HttpClient::getInstance()->send(request);
+        	}
+        	request->release();
+    	}
+    	}
+
+上面的代码，创建了一个HttpRequest的对象，设置了它的一些信息：Url，RequestType，ResponseCallback的回调和tag。接着通过HttpClient将这个请求发送出去，在这里它通过一个`isImmediate`来判断它是否是立刻发送。最后由于是new出来的对象，它又手动release了一遍。下面的代码展示了这个请求结束后的回调函数。
+
+	void HttpClientTest::onHttpRequestCompleted(HttpClient *sender, HttpResponse *response)
+	{
+    	if (!response)
+    	{
+			return;
+    	}
+    
+    	// You can get original request type from: response->request->reqType
+   		if (0 != strlen(response->getHttpRequest()->getTag())) 
+    	{
+        	log("%s completed", response->getHttpRequest()->getTag());
+    	}
+    
+	    long statusCode = response->getResponseCode();
+	    char statusString[64] = {};
+	    sprintf(statusString, "HTTP Status Code: %ld, tag = %s", statusCode, response->getHttpRequest()->getTag());
+	    _labelStatusCode->setString(statusString);
+    	log("response code: %ld", statusCode);
+    
+    	if (!response->isSucceed()) 
+    	{
+       		log("response failed");
+        	log("error buffer: %s", response->getErrorBuffer());
+			return;
+    	}
+    
+    	// dump data
+    	std::vector<char> *buffer = response->getResponseData();
+    	log("Http Test, dump data: ");
+    	for (unsigned int i = 0; i < buffer->size(); i++)
+    	{
+        	log("%c", (*buffer)[i]);
+    	}
+    	log("\n");
+    	if (response->getHttpRequest()->getReferenceCount() != 2)
+    	{
+        	log("request ref count not 2, is %d", response->getHttpRequest()->getReferenceCount());
+    	}
+	}
+	
+这段函数中，处理了请求之后返回的HttpReponse对象的数据，并将对应信息一一打印。
+
+##安卓
+
+需要注意的是，如果你是Android环境，不要忘了在您的应用程序的Manifest中增加相应的权限：
+
+	<uses-permission android:name=”android.permission.INTERNET” />
+
+
+
+
+
+
+
+
+
+
+
+
+
