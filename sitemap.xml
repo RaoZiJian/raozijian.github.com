@@ -3,12 +3,15 @@
   
   
   <url>
+<<<<<<< HEAD
     <loc>http://RaoZiJian.github.io/blog/2014/09/07/blog-1/</loc>
     <lastmod>2014-09-07T10:38:04+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   
   <url>
+=======
+>>>>>>> c23bfe8e5f99ce8f0f59e4338eb64ad9895911d1
     <loc>http://RaoZiJian.github.io/blog/2014/08/29/qa-03/</loc>
     <lastmod>2014-08-29T10:32:20+08:00</lastmod>
     <priority>0.8</priority>
@@ -29,28 +32,44 @@
   
   <url>
     <loc>http://RaoZiJian.github.io/blog/archives/</loc>
+<<<<<<< HEAD
     <lastmod>2014-09-09T17:56:36+08:00</lastmod>
+=======
+    <lastmod>2014-08-29T10:54:21+08:00</lastmod>
+>>>>>>> c23bfe8e5f99ce8f0f59e4338eb64ad9895911d1
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://RaoZiJian.github.io/</loc>
+<<<<<<< HEAD
     <lastmod>2014-09-09T17:56:36+08:00</lastmod>
+=======
+    <lastmod>2014-08-29T10:54:21+08:00</lastmod>
+>>>>>>> c23bfe8e5f99ce8f0f59e4338eb64ad9895911d1
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
     <loc>http://RaoZiJian.github.io/blog/</loc>
+<<<<<<< HEAD
     <lastmod>2014-09-09T17:56:36+08:00</lastmod>
+=======
+    <lastmod>2014-08-29T10:54:21+08:00</lastmod>
+>>>>>>> c23bfe8e5f99ce8f0f59e4338eb64ad9895911d1
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://RaoZiJian.github.io/tag-cloud/</loc>
+<<<<<<< HEAD
     <lastmod>2014-09-09T17:56:36+08:00</lastmod>
+=======
+    <lastmod>2014-08-29T10:54:21+08:00</lastmod>
+>>>>>>> c23bfe8e5f99ce8f0f59e4338eb64ad9895911d1
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

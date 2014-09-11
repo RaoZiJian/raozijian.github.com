@@ -4,7 +4,11 @@
   <title><![CDATA[Category: Faq | Ken_Rao's blog]]></title>
   <link href="http://RaoZiJian.github.io/blog/categories/faq/atom.xml" rel="self"/>
   <link href="http://RaoZiJian.github.io/"/>
+<<<<<<< HEAD
   <updated>2014-09-09T17:56:36+08:00</updated>
+=======
+  <updated>2014-08-29T10:54:21+08:00</updated>
+>>>>>>> c23bfe8e5f99ce8f0f59e4338eb64ad9895911d1
   <id>http://RaoZiJian.github.io/</id>
   <author>
     <name><![CDATA[RaoZiJian]]></name>
@@ -44,18 +48,25 @@
 (null): Linker command failed with exit code 1 (use -v to see invocation)
 </code></pre>
 
+<<<<<<< HEAD
 <!-- more -->
 
 
 <h4>Answer 1: 出现Symbol(s) not found for architecture armv7的错误警告，表示某些类没有被编译到动态库中；可能是对应文件不存在或没找到，或者是没有被加入到XCode工程中，先检查一下你的CCController-iOS.mm文件有没有问题。</h4>
 
 <p><a href="http://www.cocoachina.com/bbs/read.php?tid=225796&amp;page=1#1039042">参考链接</a></p>
+=======
+<h4>Answer 1: 出现Symbol(s) not found for architecture armv7的错误警告，表示某些类没有被编译到动态库中；可能是对应文件不存在或没找到，或者是没有被加入到XCode工程中，先检查一下你的CCController-iOS.mm文件有没有问题。</h4>
+
+<p><a href="http://www.cocoachina.com/bbs/read.php?tid=225796&amp;page=1#1039042">全文参考链接</a></p>
+>>>>>>> c23bfe8e5f99ce8f0f59e4338eb64ad9895911d1
 
 <hr />
 
 <h4>Question 2: 序列帧动画占用的内存太大，如何使用schedule相似功能？</h4>
 
 <h4>Answer 2: 序列帧动画的确是把所需要的纹理都加载到内存，然后开始播放的，这是用空间换时间的的方案。如果你觉得占用内存过大，那么使用schedule也是可以使实现相似的效果，但是你需要自己实现一套纹理管理机制，在调用所需要的纹理前加载它到内存，同时释放不需要的纹理。</h4>
+<<<<<<< HEAD
 
 <p><a href="http://www.cocoachina.com/bbs/read.php?tid=225804&amp;page=1#1038988">参考链接</a></p>
 
@@ -228,6 +239,8 @@ void resumeEventListenersForTarget(Node* target, bool recursive = false);
 <h4>Answer 17: SimpleAudioEngine是分平台实现的，Windows平台上部分API是空实现（比如preloadBackgroundMusic等等）,所以在Windows平台上并不提供预加载，调节音量等功能（参见cocos/audio/win32/SimpleAudioEngine.cpp），移植到Android/iOS/Mac上就正常了。Windows上调节音量有网友提供了解决方案。</h4>
 
 <p><a href="http://www.cocoachina.com/bbs/read.php?tid=213345">参考链接</a></p>
+=======
+>>>>>>> c23bfe8e5f99ce8f0f59e4338eb64ad9895911d1
 ]]></content>
   </entry>
   
@@ -238,7 +251,11 @@ void resumeEventListenersForTarget(Node* target, bool recursive = false);
     <id>http://RaoZiJian.github.io/blog/2014/08/28/QA-02</id>
     <content type="html"><![CDATA[<h3>Question: 对于JavaActivity如何在安卓上给应用程序设置透明背景？</h3>
 
+<<<<<<< HEAD
 <h4>之前发过一篇<a href="http://raozijian.github.io/blog/2014/08/28/QA-01/">如何在安卓上给应用程序设置透明背景 NativeActivity篇</a>，但是由于3.0rc0后Cocos2d-x更改为Java Activity，而不再是Native Activity，使得这种方法失效。</h4>
+=======
+<h4>之前发过一篇<a href="http://localhost:4000/blog/2014/08/28/QA-01/">如何在安卓上给应用程序设置透明背景 NativeActivity篇</a>，但是由于3.0rc0后Cocos2d-x更改为Java Activity，而不再是Native Activity，使得这种方法失效。</h4>
+>>>>>>> c23bfe8e5f99ce8f0f59e4338eb64ad9895911d1
 
 <p><img src="http://cocos2d-xqa.qiniudn.com/8.png" alt="" /></p>
 
