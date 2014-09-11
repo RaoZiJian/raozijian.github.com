@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Tag: NativeActivity | Ken_Rao's blog]]></title>
+  <link href="http://RaoZiJian.github.io/tags/nativeactivity/atom.xml" rel="self"/>
+  <link href="http://RaoZiJian.github.io/"/>
+  <updated>2014-09-09T17:56:36+08:00</updated>
+  <id>http://RaoZiJian.github.io/</id>
+  <author>
+    <name><![CDATA[RaoZiJian]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[如何在安卓上给应用程序设置透明背景 NativeActivity篇]]></title>
+    <link href="http://RaoZiJian.github.io/blog/2014/08/28/QA-01/"/>
+    <updated>2014-08-28T00:00:00+08:00</updated>
+    <id>http://RaoZiJian.github.io/blog/2014/08/28/QA-01</id>
+    <content type="html"><![CDATA[<h3>Question: 对于NativeActivity如何在安卓上给应用程序设置透明背景？</h3>
+
+<h4>以Cocos2d-x 3.0 rc0为例，对于NativeActivity,效果图：</h4>
+
+<p><img src="http://cocos2d-xqa.qiniudn.com/1.png" alt="" /></p>
+
+<!-- more -->
+
+
+<h4>如果你想让你的activity透明，很简单，只需要4步。</h4>
+
+<ul>
+<li>第一步：打开AndroidManifest.xml文件，添加Translucent到</li>
+</ul>
+
+
+<pre><code>android:theme="@android:style/Theme.NoTitleBar.Fullscreen"&gt;
+</code></pre>
+
+<p><img src="http://cocos2d-xqa.qiniudn.com/2.png" alt="" /></p>
+
+<ul>
+<li>第二步：打开Cocos2dxActivity.java文件，添加</li>
+</ul>
+
+
+<pre><code>getWindow().setFormat(PixelFormat.TRANSLUCENT);
+</code></pre>
+
+<p><img src="http://cocos2d-xqa.qiniudn.com/3.png" alt="" /></p>
+
+<ul>
+<li>第三步：打开cocos2d/cocos/2d/CCDirector.cpp文件，找到setGLDefaultValues()函数，修改最后一个alpha值，范围从0.0f到1.0f。</li>
+</ul>
+
+
+<pre><code>glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+</code></pre>
+
+<p><img src="http://cocos2d-xqa.qiniudn.com/4.png" alt="" />
+<img src="http://cocos2d-xqa.qiniudn.com/5.png" alt="" /></p>
+
+<ul>
+<li>第四步：打开cocos2d/cocos/2d/platform/android/nativeactivity.cpp，找到engine_init_display(struct engine* engine)函数，修改如下数组</li>
+</ul>
+
+
+<p><img src="http://cocos2d-xqa.qiniudn.com/6.png" alt="" /></p>
+
+<p>修改</p>
+
+<pre><code>const EGLint attribs[] = {
+            EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+            EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+            EGL_BLUE_SIZE, 5,
+            EGL_GREEN_SIZE, 6,
+            EGL_RED_SIZE, 5,
+            EGL_DEPTH_SIZE, 16,
+            EGL_STENCIL_SIZE, 8,
+            EGL_NONE
+    };
+</code></pre>
+
+<p>成</p>
+
+<pre><code>const EGLint attribs[] = {
+                EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+                EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,  
+ //EGL_BLUE_SIZE, 5,   --&gt;delete 
+ //EGL_GREEN_SIZE, 6,  --&gt;delete 
+ //EGL_RED_SIZE, 5,    --&gt;delete 
+                EGL_BUFFER_SIZE, 32,  //--&gt;new field
+                EGL_DEPTH_SIZE, 16,
+                EGL_STENCIL_SIZE, 8,
+                EGL_NONE
+        };
+</code></pre>
+
+<p><img src="http://cocos2d-xqa.qiniudn.com/7.png" alt="" /></p>
+
+<p>搞定收工</p>
+]]></content>
+  </entry>
+  
+</feed>
