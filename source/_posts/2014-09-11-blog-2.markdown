@@ -9,8 +9,6 @@ tag: 网络 Http Cocos2d-x v3.0
 
 ---
 
-#Cocos2d-x 网络Http篇
-
 谈到Cocos2d-x中的Http网络编程，它的基本流程是:
 
 1. 创建HttpRequest
