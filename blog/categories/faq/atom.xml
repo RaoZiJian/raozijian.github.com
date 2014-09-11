@@ -4,7 +4,15 @@
   <title><![CDATA[Category: Faq | Ken_Rao's blog]]></title>
   <link href="http://RaoZiJian.github.io/blog/categories/faq/atom.xml" rel="self"/>
   <link href="http://RaoZiJian.github.io/"/>
+<<<<<<< HEAD
+<<<<<<< HEAD
+  <updated>2014-09-09T17:56:36+08:00</updated>
+=======
   <updated>2014-08-29T10:54:21+08:00</updated>
+>>>>>>> c23bfe8e5f99ce8f0f59e4338eb64ad9895911d1
+=======
+  <updated>2014-09-09T17:56:36+08:00</updated>
+>>>>>>> 9941fbb52effca1cbe21dac6088d87b6b3107de5
   <id>http://RaoZiJian.github.io/</id>
   <author>
     <name><![CDATA[RaoZiJian]]></name>
@@ -44,15 +52,214 @@
 (null): Linker command failed with exit code 1 (use -v to see invocation)
 </code></pre>
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+<!-- more -->
+
+
+<h4>Answer 1: 出现Symbol(s) not found for architecture armv7的错误警告，表示某些类没有被编译到动态库中；可能是对应文件不存在或没找到，或者是没有被加入到XCode工程中，先检查一下你的CCController-iOS.mm文件有没有问题。</h4>
+
+<p><a href="http://www.cocoachina.com/bbs/read.php?tid=225796&amp;page=1#1039042">参考链接</a></p>
+=======
 <h4>Answer 1: 出现Symbol(s) not found for architecture armv7的错误警告，表示某些类没有被编译到动态库中；可能是对应文件不存在或没找到，或者是没有被加入到XCode工程中，先检查一下你的CCController-iOS.mm文件有没有问题。</h4>
 
 <p><a href="http://www.cocoachina.com/bbs/read.php?tid=225796&amp;page=1#1039042">全文参考链接</a></p>
+>>>>>>> c23bfe8e5f99ce8f0f59e4338eb64ad9895911d1
+=======
+<!-- more -->
+
+
+<h4>Answer 1: 出现Symbol(s) not found for architecture armv7的错误警告，表示某些类没有被编译到动态库中；可能是对应文件不存在或没找到，或者是没有被加入到XCode工程中，先检查一下你的CCController-iOS.mm文件有没有问题。</h4>
+
+<p><a href="http://www.cocoachina.com/bbs/read.php?tid=225796&amp;page=1#1039042">参考链接</a></p>
+>>>>>>> 9941fbb52effca1cbe21dac6088d87b6b3107de5
 
 <hr />
 
 <h4>Question 2: 序列帧动画占用的内存太大，如何使用schedule相似功能？</h4>
 
 <h4>Answer 2: 序列帧动画的确是把所需要的纹理都加载到内存，然后开始播放的，这是用空间换时间的的方案。如果你觉得占用内存过大，那么使用schedule也是可以使实现相似的效果，但是你需要自己实现一套纹理管理机制，在调用所需要的纹理前加载它到内存，同时释放不需要的纹理。</h4>
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 9941fbb52effca1cbe21dac6088d87b6b3107de5
+
+<p><a href="http://www.cocoachina.com/bbs/read.php?tid=225804&amp;page=1#1038988">参考链接</a></p>
+
+<hr />
+
+<h4>Question 3: Vec2跟Point有什么区别?</h4>
+
+<h4>Answer 3: 在引擎3.2中，Vec2和Point没有区别，Point是Vec2的别名；在引擎之前的版本Point曾是一个类,参考math/Vec2.h文件。</h4>
+
+<pre><code>typedef Vec2 Point
+</code></pre>
+
+<p><a href="http://www.cocoachina.com/bbs/read.php?tid=225789&amp;page=1#1038882">参考链接</a></p>
+
+<hr />
+
+<h4>Qustion 4: 关于受batchNode管理的子节点添加粒子报错的问题？</h4>
+
+<h4>Answer 4: 3.0以后的引擎支持auto-batching，你也可以不用batchNode来管理子节点Sprite，试试直接加粒子效果,关于auto-batching 这里有篇文章不错，供你参考, <a href="http://blog.csdn.net/musicvs/article/details/28226299">点击链接</a></h4>
+
+<hr />
+
+<h4>Question 5: 如何在Android下调试C++代码？</h4>
+
+<h4>Answer 5: 可以使用DS-5，Android NDK 的完美搭档DS-5，ARM Development Studio 5 (DS-5™) 社区版使 Android 本地开发工具提升到新的水平。DS-5 CE 作为 Eclipse 的插件发布，它包括在 Android 调试桥 (adb) 上构建的全面 C、C++ 和汇编图形调试器、软件性能分析器和系统分析器（包括 ARM® Mali™ GPU 支持）以及指导您完成开发周期的一整套资源，完善了重要应用程序开发工具包。但是使用DS-5调试Cocos2d-x的C++代码，还需要引擎做一些调整（根据DS-5的要求），目前3.2的版本还未集成这个功能，各位要稍等了。</h4>
+
+<p><a href="http://arm.com/zh/products/tools/software-tools/ds-5/community-edition/index.php">DS-5官方链接</a></p>
+
+<hr />
+
+<h4>Question 6: addEventListenerWithSceneGraphPriority第二个参数好像没啥用?</h4>
+
+<pre><code>void EventDispatcher::addEventListenerWithSceneGraphPriority(EventListener* listener, Node* node)
+{
+    CCASSERT(listener &amp;&amp; node, "Invalid parameters.");
+    CCASSERT(!listener-&gt;isRegistered(), "The listener has been registered.");
+
+    if (!listener-&gt;checkAvailable())
+        return;
+
+    listener-&gt;setAssociatedNode(node);
+    listener-&gt;setFixedPriority(0);
+    listener-&gt;setRegistered(true);
+
+    addEventListener(listener);
+}
+</code></pre>
+
+<h4>Answer 6: 有用的，getAssociatedNode()在很多地方被调用，当你移除这个节点的时候，绑定到节点上的事件监听器也就移除了。所以不是没用哦。 比如</h4>
+
+<pre><code>inline void setAssociatedNode(Node* node) { _node = node; };
+
+inline Node* getAssociatedNode() const { return _node; };
+
+// Pauses all listeners which are associated the specified target. 
+void pauseEventListenersForTarget(Node* target, bool recursive = false);
+
+//Resumes all listeners which are associated the specified target. 
+void resumeEventListenersForTarget(Node* target, bool recursive = false);
+</code></pre>
+
+<hr />
+
+<h4>Question 7: Cocos2d-x 3.x无法重写Node::draw()方法？</h4>
+
+<h4>Answer 7: Cocos2d-x 从v3.0开始将Node::draw()方法标记为final（参见cocos2d/2d/CCNode.h），引擎另外提供了</h4>
+
+<pre><code>virtual void draw(Renderer *renderer, const Mat4&amp; transform, uint32_t flags);
+</code></pre>
+
+<h4>可以通过重写这个函数来绘制你自己的节点，需注意的是如果更改了任何的GL状态，在使用完后必须还原。</h4>
+
+<hr />
+
+<h4>Question 8: 使用ClippingNode，为什么在Android/iOS裁剪显示错误，或者背景变为绿色？</h4>
+
+<h4>Answer 8: 未开启OpenGL深度缓存，解决方法如下：</h4>
+
+<ul>
+<li>iOS：在AppController.mm修改</li>
+</ul>
+
+
+<pre><code>EAGLView *__glView = [EAGLView viewWithFrame: [window bounds]
+                                 pixelFormat: kEAGLColorFormatRGBA8
+                                 depthFormat: GL_DEPTH24_STENCIL8_OES
+                          preserveBackbuffer: NO
+                                  sharegroup: nil
+                               multiSampling: NO
+                             numberOfSamples: 0];
+</code></pre>
+
+<ul>
+<li>Android：在AppActivity.java修改</li>
+</ul>
+
+
+<pre><code>public class AppActivity extends Cocos2dxActivity {
+
+        public Cocos2dxGLSurfaceView onCreateView() {
+        Cocos2dxGLSurfaceView glSurfaceView = new Cocos2dxGLSurfaceView(this);
+        // TestCpp should create stencil buffer
+        glSurfaceView.setEGLConfigChooser(5, 6, 5, 0, 16, 8);
+
+     return glSurfaceView;
+    }
+}
+</code></pre>
+
+<hr />
+
+<h4>Question 9: Cocos2dx 3.x Button 按钮禁用状态无用？</h4>
+
+<h4>Answer 9: 如果是使用的cocos2d-x中的Menu来作为按钮，3.0禁用Menu点击事件的函数是<code>setEnabled(false)</code>，但是如果是用Cocostudio UI做得按钮需要调用<code>button-&gt;setBright(false)</code> 和 <code>button-&gt;setTouchEnabled(false)</code>;</h4>
+
+<hr />
+
+<h4>Quetion 10: 2.2.3版本Cocos2d-x用户的数据存储突然失败。</h4>
+
+<h4>Answer 10:把Debug.win32文件夹下的UserDefault.xml删了就好了，它重新生成一个新的，这回可以存储了。</h4>
+
+<p><a href="http://www.cocoachina.com/bbs/read.php?tid=225597">参考链接</a></p>
+
+<hr />
+
+<h4>Question 11: Cocos2dx里的时间调度函数schedul不是只能传递参数为（float dt）的函数吗？如何传递参数除了float dt外还有其他的参数的函数？</h4>
+
+<h4>Answer 11: cocos2d-x 3.0使用了c++11的新特性std::bind，所以我们就可以用这个东西做很多很多的事了。我们可以将要回调的update函数多加上你要的几个参数，但是schedule中得要求函数的参数个数是一个float类型，所以就用bind吧。这里用到的CC_CALLBACK_1宏底层就是用bind实现的，通过这种绑定的方法就可以实现在schedule中传递多个参数的效果。</h4>
+
+<p><a href="http://www.cocoachina.com/bbs/read.php?tid=181100">参考链接</a></p>
+
+<hr />
+
+<h4>Question 12: 开发Cocos2d-x程序，在Mac和Win上搭建环境分别可以开发什么平台的程序？</h4>
+
+<h4>Answer 12: win环境可以生成在win平台跑的exe程序和Android下的.apk包。Mac下可以生成Mac下运行的程序和打包出Android和IOS的包。</h4>
+
+<hr />
+
+<h4>Question 13: 使用Cocos2d-x 2.x或者3.x版本，vs如何添加Cocos2d-x模板插件？</h4>
+
+<h4>Answer 13: Cocos2d-x从2.2版本开始在win下创建项目工程的时候就不再使用vs模板插件了，推荐2.2版本使用Python脚本创建，在E:\cocos2d-x-2.2\cocos2d-x-2.2\tools\project-creator目录下运行create_project.py脚本。3.x以后使用cocos命令，关于cocos命令的使用参考<a href="http://www.cocos2d-x.org/wiki/How_to_Start_A_New_Cocos2D-X_Game">官方教程</a>。</h4>
+
+<hr />
+
+<h4>Question 14: SetGlobalZOrder和SetPositionZ有什么区别？</h4>
+
+<h4>Answer 14: globalZOrder是用于渲染器中用来给“绘制命令”排序的，localZOrder是用于父节点的子节点数组中给节点对象排序的。localZorder就是在addChild的时候添加的第二个参数，指定子节点在父节点中的层级关系。如果把整个场景看成一个节点，那么GlobalZOrder就是在这个大节点中的层级。</h4>
+
+<p><a href="http://blog.csdn.net/star530/article/details/24576057">参考链接</a></p>
+
+<hr />
+
+<h4>Question 15: Cocos2d-x随机数如何使用？</h4>
+
+<h4>Answer 15: 设置随机数可以选择c++中rand函数，也可以使用Cocos2d-x中的宏CCRANDOM_0_1,不过都需要设置一下随机数，不如使用arc4random，不需要自己设置随机数，就可以做到真正的随机。</h4>
+
+<p><a href="http://www.cocoachina.com/bbs/read.php?tid=226037&amp;fpage=2">参考链接</a></p>
+
+<hr />
+
+<h4>Question 16: cocos2dx 3.0 实现监听Android返回键要怎么弄？</h4>
+
+<h4>Answer 16: 该功能的实现通过使用3.x以后的事件监听就可以，注册EventListenerKeyboard事件，在onKeyReleased回调函数中，判断按键的类型，如果是KEY_RETURN，KEY_ESCAPE，KEY_BACKSPACE就进行逻辑的处理，最后将该事件监听器添加到分发器中。</h4>
+
+<hr />
+
+<h4>Question 17: SimpleAudioEngine在Windows平台上卡顿严重，无法调节音量？</h4>
+
+<h4>Answer 17: SimpleAudioEngine是分平台实现的，Windows平台上部分API是空实现（比如preloadBackgroundMusic等等）,所以在Windows平台上并不提供预加载，调节音量等功能（参见cocos/audio/win32/SimpleAudioEngine.cpp），移植到Android/iOS/Mac上就正常了。Windows上调节音量有网友提供了解决方案。</h4>
+
+<p><a href="http://www.cocoachina.com/bbs/read.php?tid=213345">参考链接</a></p>
+<<<<<<< HEAD
+=======
+>>>>>>> c23bfe8e5f99ce8f0f59e4338eb64ad9895911d1
+=======
+>>>>>>> 9941fbb52effca1cbe21dac6088d87b6b3107de5
 ]]></content>
   </entry>
   
@@ -63,7 +270,15 @@
     <id>http://RaoZiJian.github.io/blog/2014/08/28/QA-02</id>
     <content type="html"><![CDATA[<h3>Question: 对于JavaActivity如何在安卓上给应用程序设置透明背景？</h3>
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+<h4>之前发过一篇<a href="http://raozijian.github.io/blog/2014/08/28/QA-01/">如何在安卓上给应用程序设置透明背景 NativeActivity篇</a>，但是由于3.0rc0后Cocos2d-x更改为Java Activity，而不再是Native Activity，使得这种方法失效。</h4>
+=======
 <h4>之前发过一篇<a href="http://localhost:4000/blog/2014/08/28/QA-01/">如何在安卓上给应用程序设置透明背景 NativeActivity篇</a>，但是由于3.0rc0后Cocos2d-x更改为Java Activity，而不再是Native Activity，使得这种方法失效。</h4>
+>>>>>>> c23bfe8e5f99ce8f0f59e4338eb64ad9895911d1
+=======
+<h4>之前发过一篇<a href="http://raozijian.github.io/blog/2014/08/28/QA-01/">如何在安卓上给应用程序设置透明背景 NativeActivity篇</a>，但是由于3.0rc0后Cocos2d-x更改为Java Activity，而不再是Native Activity，使得这种方法失效。</h4>
+>>>>>>> 9941fbb52effca1cbe21dac6088d87b6b3107de5
 
 <p><img src="http://cocos2d-xqa.qiniudn.com/8.png" alt="" /></p>
 
