@@ -1,0 +1,482 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Cocos2d-x 网络Http篇 - Ken_Rao's blog</title>
+  <meta name="author" content="RaoZiJian">
+
+  
+  <meta name="description" content="谈到Cocos2d-x中的Http网络编程，它的基本流程是: 创建HttpRequest
+创建setResponseCallback()回调函数来设置如何对请求回复后的信息进行操作
+通过HttpClient发送HttpRequest请求 因此，你首先要知道3个类: HttpRequest &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://RaoZiJian.github.io/blog/2014/09/10/blog-2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Ken_Rao's blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Ken_Rao's blog</a></h1>
+  
+    <h2>Indie game developer is my end goal</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:RaoZiJian.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/tag-cloud/">Tags</a></li> 
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Cocos2d-x 网络Http篇</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-09-10T10:22:52+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:22 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>谈到Cocos2d-x中的Http网络编程，它的基本流程是:</p>
+
+<ol>
+<li>创建HttpRequest</li>
+<li>创建setResponseCallback()回调函数来设置如何对请求回复后的信息进行操作</li>
+<li>通过HttpClient发送HttpRequest请求</li>
+</ol>
+
+
+<p>因此，你首先要知道3个类:</p>
+
+<ul>
+<li>HttpRequest</li>
+<li>HttpResponse</li>
+<li>HttpClient</li>
+</ul>
+
+
+<p>了解了它们之后再来看引擎<code>cpp-test</code>中的<code>cpp-test/Classes/ExtensionsTest/NetworkTest/HttpClientTest</code>，就能对Cocos2d-x中Http的用法基本了解了。</p>
+
+<!-- more -->
+
+
+<h2>HttpRequest</h2>
+
+<p>顾名思义，它将处理向Http的发出请求，即将用户的请求内容信息给封装到HttpRequest对象当中。目前的话，支持以下几种类型的HttpRequest</p>
+
+<pre><code>/** Use this enum type as param in setReqeustType(param) */
+enum class Type
+{
+    GET,
+    POST,
+    PUT,
+    DELETE,
+    UNKNOWN,
+};
+</code></pre>
+
+<p>其中UNKNOWN类型是它的初始化默认类型，这个在它的构造函数中可以看到，需要注意的是，由于线程不安全的问题，不要将<code>HttpRequest</code>放到自动回收池当中去，这可能会导致崩溃。</p>
+
+<pre><code>/** Constructor
+    Because HttpRequest object will be used between UI thead and network thread,
+    requestObj-&gt;autorelease() is forbidden to avoid crashes in AutoreleasePool
+    new/retain/release still works, which means you need to release it manually
+    Please refer to HttpRequestTest.cpp to find its usage
+ */
+HttpRequest()
+{
+    _requestType = Type::UNKNOWN;
+    _url.clear();
+    _requestData.clear();
+    _tag.clear();
+    _pTarget = nullptr;
+    _pSelector = nullptr;
+    _pCallback = nullptr;
+    _pUserData = nullptr;
+};
+</code></pre>
+
+<p>通过这个构造函数，我们也可以看到HttpRequest的一些属性，这些protected的属性在HttpRequest中的定义如下，可以通过注释来简单的了解下它们的作用。</p>
+
+<pre><code>protected:
+ // properties
+    Type                        _requestType;    /// kHttpRequestGet, kHttpRequestPost or other enums
+    std::string                 _url;            /// target url that this request is sent to
+    std::vector&lt;char&gt;           _requestData;    /// used for POST
+    std::string                 _tag;            /// user defined tag, to identify different requests in response callback
+    Ref*                        _pTarget;        /// callback target of pSelector function
+    SEL_HttpResponse            _pSelector;      /// callback function, e.g. MyLayer::onHttpResponse(HttpClient *sender, HttpResponse * response)
+    ccHttpRequestCallback       _pCallback;      /// C++11 style callbacks
+    void*                       _pUserData;      /// You can add your customed data here 
+    std::vector&lt;std::string&gt;    _headers;             /// custom http headers
+</code></pre>
+
+<p>这些属性中，<code>_requestType</code>，<code>_url</code>，<code>_requestData</code>，<code>_tag</code>，<code>_pTarget</code>，<code>_headers</code>都有get/set方法可以找到，这些也是比较常用到的属性。</p>
+
+<p><code>_pSelector</code>指的是发送请求后的回调函数，<code>_pTarget</code>是它的回调函数的作用对象，如下所示：</p>
+
+<pre><code>CC_DEPRECATED_ATTRIBUTE inline void setResponseCallback(Ref* pTarget, SEL_HttpResponse pSelector)
+{
+    _pTarget = pTarget;
+    _pSelector = pSelector;
+
+    if (_pTarget)
+    {
+        _pTarget-&gt;retain();
+    }
+}
+</code></pre>
+
+<p>可以看到，目前旧的<code>setResponseCallback</code>已经被废弃了，这是现在由于我们有了新的支持C++11类型的回调函数，现在这个回调函数将指向<code>_pCallback</code>，它是一个<code>ccHttpRequestCallback</code>类，它的定义如下：</p>
+
+<pre><code>typedef std::function&lt;void(HttpClient* client, HttpResponse* response)&gt; ccHttpRequestCallback;
+</code></pre>
+
+<p><code>_pCallback</code>在HttpRequest类中担任发送请求后接受的回调函数的责任，它仍然叫做<code>setResponseCallback</code>但是已经是C++11类型的回调函数了:</p>
+
+<pre><code>inline void setResponseCallback(const ccHttpRequestCallback&amp; callback)
+{
+    _pCallback = callback;
+}
+</code></pre>
+
+<p>OK!<code>HttpRequest</code>的类的属性和接口的用法和含义大致上就是这样。</p>
+
+<h2>HttpResponse</h2>
+
+<p>与HttpRequest相反，HttpResponse存储Http服务器返回的请求，因此它并不需要由用户创建，它将由HttpClient创建并返回，用户只需要知道如何去处理它返回的信息即可。</p>
+
+<p>它的一些基本属性:</p>
+
+<pre><code>protected:
+    bool initWithRequest(HttpRequest* request);
+
+    // properties
+    HttpRequest*        _pHttpRequest;  /// the corresponding HttpRequest pointer who leads to this response 
+    bool                _succeed;       /// to indecate if the http reqeust is successful simply
+    std::vector&lt;char&gt;   _responseData;  /// the returned raw data. You can also dump it as a string
+    std::vector&lt;char&gt;   _responseHeader;  /// the returned raw header data. You can also dump it as a string
+    long                _responseCode;    /// the status code returned from libcurl, e.g. 200, 404
+    std::string         _errorBuffer;   /// if _responseCode != 200, please read _errorBuffer to find the reason 
+</code></pre>
+
+<p>其中<code>initWithRequest</code>只在内部调用的时候需要用到，用户不需要关心。<code>_pHttpRequest</code>可以通过<code>getHttpRequest()</code>来获得它对用的HttpRequest请求对象，<code>_succeed</code>可以通过<code>isSucceed</code>接口来判定是否请求成功。其余的属性均有get/set方法来获得进行操作。</p>
+
+<h2>HttpClient</h2>
+
+<p>HttpClient是一个单例，它控制着HttpRequest和HttpResponse的收发传递。它有一些公共接口，其中最重要的可能就是对请求的发送了，当然在这之前你得先获得这个单例对象：</p>
+
+<pre><code>/** Return the shared instance **/
+static HttpClient *getInstance();
+
+/** Relase the shared instance **/
+static void destroyInstance();
+/**
+ * Add a get request to task queue
+ * @param request a HttpRequest object, which includes url, response callback etc.
+                  please make sure request-&gt;_requestData is clear before calling "send" here.
+ */
+void send(HttpRequest* request);
+
+/**
+ * Immediate send a request
+ * @param request a HttpRequest object, which includes url, response callback etc.
+                  please make sure request-&gt;_requestData is clear before calling "sendImmediate" here.
+ */
+void sendImmediate(HttpRequest* request);
+</code></pre>
+
+<p>在这里，<code>send</code>和<code>sendImmediate</code>的区别在于，前者会将HttpRequest排到到request的队列线程的最后，后者则会立刻新建一个线程后发送。除此之外，它还有一些接口对应其它的用途。如<code>get/setTimeoutForConnect</code>可以get/set连接的超时时间，<code>get/setTimeoutForRead</code>可以get/set下载的超时时间。</p>
+
+<h2>HttpClientTest</h2>
+
+<p>在了解了相关的3个类之后，我相信现在大部分内容你应该已经了解了，现在来看一下cpp-test中的http流程是怎么写的，你就基本上大致了解它的使用过程了。更多的内容，可以在<code>cpp-test/Classes/ExtensionsTest/NetworkTest/HttpClientTest</code>看到</p>
+
+<pre><code>void HttpClientTest::onMenuDeleteTestClicked(Ref *sender, bool isImmediate)    // test 1
+    {
+        HttpRequest* request = new (std::nothrow) HttpRequest();
+        request-&gt;setUrl("http://just-make-this-request-failed.com");
+        request-&gt;setRequestType(HttpRequest::Type::GET);
+        request-&gt;setResponseCallback(CC_CALLBACK_2(HttpClientTest::onHttpRequestCompleted, this));
+        if (isImmediate)
+        {
+            request-&gt;setTag("GET immediate test1");
+            HttpClient::getInstance()-&gt;sendImmediate(request);
+        }else
+        {
+            request-&gt;setTag("GET test1");
+            HttpClient::getInstance()-&gt;send(request);
+        }
+        request-&gt;release();
+    }
+    }
+</code></pre>
+
+<p>上面的代码，创建了一个HttpRequest的对象，设置了它的一些信息：Url，RequestType，ResponseCallback的回调和tag。接着通过HttpClient将这个请求发送出去，在这里它通过一个<code>isImmediate</code>来判断它是否是立刻发送。最后由于是new出来的对象，它又手动release了一遍。下面的代码展示了这个请求结束后的回调函数。</p>
+
+<pre><code>void HttpClientTest::onHttpRequestCompleted(HttpClient *sender, HttpResponse *response)
+{
+    if (!response)
+    {
+        return;
+    }
+
+    // You can get original request type from: response-&gt;request-&gt;reqType
+    if (0 != strlen(response-&gt;getHttpRequest()-&gt;getTag())) 
+    {
+        log("%s completed", response-&gt;getHttpRequest()-&gt;getTag());
+    }
+
+    long statusCode = response-&gt;getResponseCode();
+    char statusString[64] = {};
+    sprintf(statusString, "HTTP Status Code: %ld, tag = %s", statusCode, response-&gt;getHttpRequest()-&gt;getTag());
+    _labelStatusCode-&gt;setString(statusString);
+    log("response code: %ld", statusCode);
+
+    if (!response-&gt;isSucceed()) 
+    {
+        log("response failed");
+        log("error buffer: %s", response-&gt;getErrorBuffer());
+        return;
+    }
+
+    // dump data
+    std::vector&lt;char&gt; *buffer = response-&gt;getResponseData();
+    log("Http Test, dump data: ");
+    for (unsigned int i = 0; i &lt; buffer-&gt;size(); i++)
+    {
+        log("%c", (*buffer)[i]);
+    }
+    log("\n");
+    if (response-&gt;getHttpRequest()-&gt;getReferenceCount() != 2)
+    {
+        log("request ref count not 2, is %d", response-&gt;getHttpRequest()-&gt;getReferenceCount());
+    }
+}
+</code></pre>
+
+<p>这段函数中，处理了请求之后返回的HttpReponse对象的数据，并将对应信息一一打印。</p>
+
+<h2>安卓</h2>
+
+<p>需要注意的是，如果你是Android环境，不要忘了在您的应用程序的Manifest中增加相应的权限：</p>
+
+<pre><code>&lt;uses-permission android:name=”android.permission.INTERNET” /&gt;
+</code></pre>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">RaoZiJian</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-09-10T10:22:52+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:22 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>blog</a>, <a class='category' href='/blog/categories/cocos2dx/'>cocos2dx</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+     
+  <h2>Share</h2>  
+      <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_24x24">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1395677758909755" charset="utf-8"></script>
+<!-- JiaThis Button END -->  
+   
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/09/10/blog-2/" title="Previous Post: Cocos2d-x 网络篇">&laquo; Cocos2d-x 网络篇</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  
+  <section>  
+    <h1>Comments</h1>  
+    <div id="comments" aria-live="polite"><div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"RaoZiJian"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+</div>  
+  </section>  
+  
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/09/10/blog-2/">Cocos2d-x 网络Http篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/10/blog-2/">Cocos2d-x 网络篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/07/blog-1/">Blog_1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/29/qa-03/">QA_List_1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/28/QA-02/">如何在安卓上给应用程序设置透明背景 JavaActivity篇</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>  
+  <h1>Categories</h1>  
+  <ul id="categories">  
+    <li class='category'><a href='/blog/categories/blog/'>blog (3)</a></li>
+<li class='category'><a href='/blog/categories/cocos2dx/'>cocos2dx (2)</a></li>
+<li class='category'><a href='/blog/categories/faq/'>faq (3)</a></li>
+<li class='category'><a href='/blog/categories/my/'>my (1)</a></li>
+  
+  </ul>  
+</section>  
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - RaoZiJian -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

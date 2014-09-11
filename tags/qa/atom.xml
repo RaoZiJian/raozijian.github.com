@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Tag: blog | Ken_Rao's blog]]></title>
-  <link href="http://RaoZiJian.github.io/tags/blog/atom.xml" rel="self"/>
+  <title><![CDATA[Tag: QA | Ken_Rao's blog]]></title>
+  <link href="http://RaoZiJian.github.io/tags/qa/atom.xml" rel="self"/>
   <link href="http://RaoZiJian.github.io/"/>
-  <updated>2014-09-09T17:56:36+08:00</updated>
+  <updated>2014-09-11T11:21:22+08:00</updated>
   <id>http://RaoZiJian.github.io/</id>
   <author>
     <name><![CDATA[RaoZiJian]]></name>
