@@ -5,7 +5,7 @@ title: "Blog_1"
 date: 2014-09-07 10:38:04 +0800
 comments: true
 categories: My blog
-tag: blog
+tag: QA
 
 ---
 #如何利用Question2Answer创建QA库
